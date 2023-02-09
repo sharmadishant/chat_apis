@@ -23,8 +23,8 @@ def addUserInGroup(request):
             userToAdd = User.objects.get(id=data['user'])
             print(request.user,userToAdd)
             RoomUsers.objects.get_or_create(room=room, room_user = userToAdd )
-    except:
-        return JsonResponse({'status':"false","error":"not allowed to send message"}, safe=False)
+    except Exception as e :
+        return JsonResponse({'status' : "false","error": f'{e}' }, safe=False)
 
     """
     Add New User.
@@ -40,8 +40,8 @@ def delUserInGroup(request):
         if(room.user_role == 'A'):
             tempStore = RoomUsers.objects.get(id = data['user'])
             tempStore.delete()
-    except:
-        return JsonResponse({'status':"false","error":"Admin Can remove Any Member"}, safe=False)
+    except Exception as e:
+        return JsonResponse({'status':"false","error":f"{e}"}, safe=False)
 
     """
     Remove Any User.
@@ -57,9 +57,12 @@ def searchUserInGroup(request):
     data = request.data
     try:
         if(request.query_params.__contains__('search')):
-            print( data['room_id'], )
             room = Room.objects.get(id = data['room_id'])
-            tempStore = RoomUsers.objects.filter(room = room).filter(room_user__username__icontains = request.query_params['search'])
+            if(request.query_params['search'] == 'all' or request.query_params['search'] == 'ALL'):
+                tempStore = RoomUsers.objects.filter(room = room)
+            else:
+                tempStore = RoomUsers.objects.filter(room = room).filter(room_user__username__icontains = request.query_params['search'])
+            
             serializer = UserInRoomSerializer(tempStore, many=True)
             return JsonResponse({"data":serializer.data})
     except:
@@ -107,3 +110,18 @@ def message_view(request):
         return JsonResponse({'status':"false","error":"Not Allowed to View Message"}, safe=False)
 
     return JsonResponse({'status':"ok"}, safe=False)
+
+@api_view(['POST'])
+@csrf_exempt
+def createGroup(request):
+    """
+    Add New Room.
+    """
+    data = request.data
+    print(data)
+    try:
+        room = Room.objects.create(name = data['room_name'], user_role = 'A', username = request.user)
+        roomuser = RoomUsers.objects.get_or_create(room=room, room_user = request.user )
+        return JsonResponse({'status':"ok",'room':RoomSerializer(room).data }, safe=False)
+    except Exception as e:
+        return JsonResponse({'status':"false","error":f'{e}'}, safe=False)

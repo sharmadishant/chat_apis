@@ -22,7 +22,7 @@ class createUser(generics.GenericAPIView):
         print("data serializer start")
         print(serializer.is_valid())
         print("data serializer end")
-        print(serializer.data)
+        # print(serializer.data)
         serializer.is_valid(raise_exception=True)
 
         try:
