@@ -19,7 +19,7 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    path('',include('users.urls')),
-    path('',include('chatting.urls')),
+    path('users/',include('users.urls')),
+    path('users/',include('chatting.urls')),
     path('admin/', admin.site.urls),
 ]

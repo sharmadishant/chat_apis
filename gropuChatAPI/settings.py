@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'chatting.apps.ChattingConfig',
     'users.apps.UsersConfig',
+    
 ]
 
 CORS_ALLOW_CREDENTIALS = True

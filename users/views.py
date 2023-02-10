@@ -29,7 +29,7 @@ class createUser(generics.GenericAPIView):
             user = serializer.save()
             return Response({
                "user": UserSerializer(user, context=self.get_serializer_context()).data,
-            })
+            },status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"msg": f"This email address is already registered with us"},
                             status=status.HTTP_409_CONFLICT)
